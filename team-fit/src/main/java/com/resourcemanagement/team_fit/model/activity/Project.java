@@ -1,29 +1,36 @@
 package com.resourcemanagement.team_fit.model.activity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.resourcemanagement.team_fit.model.Skill;
+import com.resourcemanagement.team_fit.model.basic.Employee;
+import com.resourcemanagement.team_fit.model.basic.Person;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 public class Project implements IActivity {
-    private long id;
-    private String name;
-    private List<Skill> skills;
-
+    private String title;
+    private ArrayList<Skill> skills = new ArrayList<>();
+    private ArrayList<Person> employees=new ArrayList<>();
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date start;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date finish;
 
-    public Project(String name, List<Skill> skills, Date start, Date finish) {
-        this.name = name;
+    public Project(){}
+    public Project(String title, ArrayList<Skill> skills, ArrayList<Person> employees, Date start, Date finish) {
+        this.title = title;
         this.skills = skills;
+        this.employees = employees;
         this.start = start;
         this.finish = finish;
     }
 
     @Override
     public String getDescription() {
-        return "Proiectul " + name + getSkills();
+        return "Proiectul " + title + getSkills();
     }
 
     @Override
@@ -31,19 +38,36 @@ public class Project implements IActivity {
         return "Durata: " + getYears();
     }
 
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getFinish() {
+        return finish;
+    }
+
     private long getYears() {
         return (finish.getTime()-start.getTime())/ (1000l*60*60*24*365);
     }
 
-    public List<Skill> getSkills() {
+    public ArrayList<Skill> getSkills() {
         return skills;
     }
-
-    public void setName(String name) {
-        this.name = name;
+    public ArrayList<Person> getEmployees() {
+        return employees;
     }
-    public void setSkills(List<Skill> skills) {
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public void setSkills(ArrayList<Skill> skills) {
         this.skills = skills;
+    }
+
+
+
+    public void setEmployees(ArrayList<Person> employees) {
+        this.employees = employees;
     }
 
     public void setStart(Date start) {

@@ -3,26 +3,20 @@ package com.resourcemanagement.team_fit.model;
 import com.resourcemanagement.team_fit.model.enums.Level;
 
 public class Skill {
-    private long id;
-    private String name;
+    private String title;
     private Level Level;
 
-    public Skill(long id, String name, Level level) {
-        this.id = id;
-        this.name = name;
+    public Skill(String title, Level level) {
+        this.title = title;
         Level = level;
     }
 
-    public long getId() {
-        return id;
+    public String getTitle() {
+        return title;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public com.resourcemanagement.team_fit.model.enums.Level getLevel() {
