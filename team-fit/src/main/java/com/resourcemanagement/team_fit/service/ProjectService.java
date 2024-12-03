@@ -4,50 +4,87 @@ import com.resourcemanagement.team_fit.model.Skill;
 import com.resourcemanagement.team_fit.model.activity.Project;
 import com.resourcemanagement.team_fit.model.basic.Employee;
 import com.resourcemanagement.team_fit.model.basic.Person;
+import com.resourcemanagement.team_fit.repository.PersonRepository;
+import com.resourcemanagement.team_fit.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ProjectService {
-    Person employee1 = new Employee("Ion", "Elena", "ielena@gmail.com", "Brasov", 23, false);
-    Person employee2 = new Employee("Ursu", "Anca", "uanca@gmail.com", "Brasov", 19, false);
-    Person employee3 = new Employee("Vulpe", "Maria", "vmaria@gmail.com", "Bucuresti", 30, true);
-    Person employee4 = new Employee("Cantemir", "Ion", "cion@gmail.com", "Bucuresti", 29, true);
-    ArrayList<Person> employees = new ArrayList<>(Arrays.asList(employee1, employee2, employee3, employee4));
-    String title = "Java";
-    ArrayList<Skill> skills = new ArrayList<>();
-    Date start = new Date();
-    Date finish = new Date();
-    Project project1 = new Project(title, skills, employees, start, finish);
 
-    List<Project> projects = new ArrayList<>(Arrays.asList(project1));
+    @Autowired
+    private ProjectRepository projectRepository;
 
-    public List<Project> getProjects() {
-        return projects;
+    @Autowired
+    private PersonRepository personRepository;
+
+    //region CRUD
+    public void savePerson(Employee employee){
+        personRepository.save(employee);
     }
 
-    public  Project getProject() {
-        return project1;
+    public Person updatePerson(Employee employee, Long personId){
+        Person personDB= personRepository.findById(personId).orElse(null);
+        System.out.println(personId);
+        System.out.println(personDB);
+
+        if(personDB != null){
+            personDB.setAddress(employee.getAddress());
+            personDB.setAge(employee.getAge());
+            personDB.setEmail(employee.getEmail());
+            personDB.setMarried(employee.isMarried());
+            personDB.setFirstName(employee.getFirstName());
+            personDB.setLastName(employee.getLastName());
+
+            return personRepository.save(personDB);
+        }
+        return null;
     }
 
-    public void addProject(Project project) {
-        projects.add(project);
+    public Person getPersonById(Long employeeId){
+        return personRepository.findById(employeeId).orElse(null);
     }
 
-    public List<Person> getEmployees() {
-        return employees;
+    public List<Person> getAllPeople() {
+        return (List<Person>) personRepository.findAll();
     }
 
-    public Person getEmployeesById(String employeeId) {
-        return employees.stream().filter(e -> e.getIdentifier().equals(employeeId) ).findFirst().orElse(new Employee("No person", employeeId,"no emal", "No town",0,false));
 
+    public void deletePerson(Long employeeId){
+        personRepository.deleteById(employeeId);
     }
 
-    public void addEmployee(Employee employee) {
-        employees.add(employee);
+    public void saveProject(Project project){
+        projectRepository.save(project);
     }
+
+    public Project updateProject(Project project, Long projectId) {
+        Project projectDB= projectRepository.findById(projectId).orElse(null);
+
+        if(projectDB != null){
+            projectDB.setTitle(project.getTitle());
+            projectDB.setEmployees((ArrayList<Person>) project.getEmployees());
+            projectDB.setRequirements((ArrayList<Skill>) project.getRequirements());
+            projectDB.setFinish(project.getFinish());
+
+            return projectRepository.save(projectDB);
+        }
+        return null;
+    }
+
+    public Project getProjectById(Long projectId) {
+        return projectRepository.findById(projectId).orElse(null);
+    }
+
+    public List<Project> getAllProjects() {
+        return (List<Project>) projectRepository.findAll();
+    }
+
+    public void deleteProject(Project project){
+        projectRepository.deleteById(project.getId());
+    }
+
+    //endregion
 }
