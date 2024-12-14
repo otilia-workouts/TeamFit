@@ -5,7 +5,6 @@ import com.resourcemanagement.team_fit.model.Skill;
 import com.resourcemanagement.team_fit.model.activity.Project;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

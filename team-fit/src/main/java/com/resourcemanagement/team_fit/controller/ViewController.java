@@ -1,19 +1,28 @@
 package com.resourcemanagement.team_fit.controller;
 
-import com.resourcemanagement.team_fit.model.Skill;
-import com.resourcemanagement.team_fit.model.activity.Project;
-import com.resourcemanagement.team_fit.model.basic.Employee;
-import com.resourcemanagement.team_fit.model.basic.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Controller
 public class ViewController {
+
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("message", "Web Development Project Team Fit ☻!");
+        return  "index";
+    }
+
+    @GetMapping("/admin/home")
+    public String handleAdminHome(){
+        return "home_admin";
+    }
+
+    @GetMapping("/menu")
+    public String addProj(Model model) {
+        model.addAttribute("addProj", "Adăugare proect: ");
+        return "menu";
+    }
 
     @GetMapping("/angajatnou")
     public String addPersonForm() {

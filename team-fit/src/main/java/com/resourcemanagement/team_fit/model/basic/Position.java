@@ -1,6 +1,5 @@
 package com.resourcemanagement.team_fit.model.basic;
 
-import com.resourcemanagement.team_fit.model.activity.Project;
 import jakarta.persistence.*;
 
 @Entity

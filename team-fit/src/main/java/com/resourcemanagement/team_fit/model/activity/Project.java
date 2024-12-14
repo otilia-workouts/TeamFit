@@ -6,7 +6,6 @@ import com.resourcemanagement.team_fit.model.Skill;
 import com.resourcemanagement.team_fit.model.basic.Employee;
 import com.resourcemanagement.team_fit.model.basic.Person;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
 import java.util.Date;

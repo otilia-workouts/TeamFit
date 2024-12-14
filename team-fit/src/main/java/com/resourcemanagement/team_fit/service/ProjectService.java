@@ -11,7 +11,6 @@ import com.resourcemanagement.team_fit.repository.ProjectRepository;
 import com.resourcemanagement.team_fit.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.util.Tuple;
 
 import java.util.*;
 import java.util.stream.Collectors;
