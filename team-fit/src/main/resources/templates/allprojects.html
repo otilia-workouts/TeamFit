@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Proiecte</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+
+    <script>
+        let projects = [];
+
+        async function fetchProject() {
+            try {
+                const response = await fetch('/teamfit/all-projects');
+                projects = await response.json();
+
+                const tableBody = document.getElementById('projectTableBody');
+                tableBody.innerHTML = '';
+
+                projects.forEach((project, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index+1}</td>
+                        <td>${project.id}</td>
+                        <td>${project.title}</td>
+<!--                        <td>${project.requirements}</td>-->
+                        <td><button onclick="editProject(${project.id})">Edit</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching:', error);
+            }
+        }
+
+        function editProject(id) {
+            const project = projects.find(project => project.id === id);
+            if (project) {
+                document.getElementById('editForm').style.display = 'block';
+                document.getElementById('editId').value = project.id;
+                document.getElementById('editTitle').value = project.title;
+            }
+        }
+
+        async function updateProject(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('editTitle').value;
+
+            const project = {title};
+
+            try {
+                const response = await fetch(`teamfit/project/save/${(id)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    },
+                    body: JSON.stringify(project)
+                });
+
+                if (response.ok) {
+                    const updatedProject = await response.json();
+                    alert('Project updated successfully!');
+                    await fetchProject();
+                    document.getElementById('editForm').style.display = 'none';
+                } else {
+                    alert('Failed to update project');
+                }
+            } catch (error) {
+                console.error('Error updating:', error);
+            }
+
+        }
+
+        window.onload = fetchProject;
+    </script>
+</head>
+<body>
+<table action="/proiecte">
+    <thead>
+    <tr>
+        <th>Nr.</th>
+        <th>ID</th>
+        <th>Numele Proiectului</th>
+    </tr>
+    </thead>
+    <tbody id="projectTableBody">
+    </tbody>
+</table>
+
+<div id="editForm" style="display: none;">
+    <h2>Edit Project</h2>
+    <form onsubmit="updateProject(event)">
+        <input type="hidden" id="editId"/>
+        <label for="editTitle">Title:</label>
+        <input type="text" id="editTitle" required/><br><br>
+        <button type="submit">Salvare</button>
+    </form>
+</div>
+</body>
+</html>

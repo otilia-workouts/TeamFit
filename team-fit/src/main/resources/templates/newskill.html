@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Adaugă o abilitate:</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <script>
+        async function getLevels(){
+            const response = await fetch('/teamfit/levels', {
+                method: 'GET',
+            });
+            if (response.ok) {
+                let select = document.getElementById('level');
+                const levels=await response.json();
+
+                levels.forEach((level, index)=>{
+
+                    select.add(new Option(level, index));
+                })
+            } else {
+                alert('Error!');
+            }
+        }
+
+        async function saveSkill(event) {
+            event.preventDefault();
+
+            let select = document.getElementById('level');
+            let selected_text=select.options[select.selectedIndex].text;
+            const skill = {
+                title: document.getElementById('title').value,
+                level: selected_text,
+            };
+
+            const response = await fetch('/teamfit/skill/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                },
+                body: JSON.stringify(skill)
+            });
+
+            if (response.ok) {
+                alert('saved successfully!');
+                document.getElementById('post_skill').reset();
+            } else {
+                alert('Error saving!');
+            }
+        }
+    </script>
+</head>
+<body onload="getLevels()">
+
+<section id="hcenter">
+<form action="/abilitatenoua" th:object="${skill}" method="post" id="post_skill" onsubmit="saveSkill(event)">
+    <input type="hidden" th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}"/>
+
+        <label for="title">Nume abilitate:</label><br>
+        <input type="text" id="title" name="title" required><br>
+        <label for="level">Nivel:</label><br>
+        <select id="level" name="level" >
+        </select><br>
+        <br>
+        <input type="submit" value="Salvare">
+</form>
+</section>
+</body>
+</html>

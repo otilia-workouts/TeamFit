@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparare</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <script>
+
+        let projects=[]
+        async function getProjects() {
+            const response = await fetch('/teamfit/all-projects', {
+                method: 'GET',
+            });
+            if (response.ok) {
+                let select = document.getElementById('project');
+                projects = await response.json();
+
+                projects.forEach((project) => {
+
+                    select.add(new Option(project.title));
+                })
+
+                await getCompatibilities();
+            } else {
+                alert('Error!');
+            }
+        }
+
+        async function getCompatibilities() {
+            const projectSelected = document.getElementById("project");
+            const id = projects[projectSelected.selectedIndex].id;
+            const response = await fetch(`teamfit/project/${id}/compatibitities`, {
+                method: 'GET',
+            });
+            if (response.ok) {
+                const compatibilities = await response.json();
+                let headerRow = document.getElementById("headerRow");
+                let tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML='';
+
+
+                for (const [key, employees] of Object.entries(compatibilities)) {
+                    const skills = JSON.parse(key.replace(/([\w#]+)/g, '"$1"').replace(/\s/g, ''));
+
+                    headerRow.innerHTML = `<th>Nume angajați</th>`;
+                    skills.forEach(skill => {
+                        const th = document.createElement("th");
+                        th.textContent = skill;
+                        headerRow.appendChild(th);
+                    });
+
+                    for (const [employee, results] of Object.entries(employees)) {
+                        const row = document.createElement("tr");
+
+                        const employeeCell = document.createElement("td");
+                        employeeCell.textContent = employee;
+                        row.appendChild(employeeCell);
+
+                        results.forEach(result => {
+                            const resultCell = document.createElement("td");
+                            resultCell.textContent = result ? "✔" : "✘";
+                            resultCell.style.color = result ? "green" : "red";
+                            row.appendChild(resultCell);
+                        });
+
+                        tableBody.appendChild(row);
+                    }
+                }
+
+            } else {
+                alert('Error!');
+            }
+        }
+    </script>
+</head>
+<body onload="getProjects()">
+<div id="select_project">
+    <label for="project">Alege un proiect:</label><br>
+    <select class="project" id="project" name="project" onchange="getCompatibilities()">
+    </select>
+</div>
+<table action="/comparareabilitati" id="tableCompatibility">
+    <thead>
+    <tr id="headerRow"></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+</body>
+</html>

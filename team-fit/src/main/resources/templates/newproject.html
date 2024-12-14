@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Adaugă un proiect:</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <script>
+        let people=[]
+        let skills=[]
+        async function saveProject(event) {
+            event.preventDefault();
+
+            let projectSkills=[]
+            let selects=document.getElementsByClassName("skill")
+
+            Array.from(selects).forEach((select)=>{
+                projectSkills.push(skills[select.selectedIndex])
+            })
+
+            let projectEmployees=[]
+            selects=document.getElementsByClassName("person")
+            Array.from(selects).forEach((select)=>{
+                projectEmployees.push(people[select.selectedIndex])
+            })
+
+            const project = {
+                title: document.getElementById('title').value,
+                requirements: projectSkills,
+                employees: projectEmployees,
+                start: new Date(),
+                finish: new Date()
+            };
+
+            const response = await fetch('/teamfit/project/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                },
+                body: JSON.stringify(project)
+            });
+
+            if (response.ok) {
+                alert('saved successfully!');
+                document.getElementById('post_project').reset();
+            } else {
+                alert('Error saving project!');
+            }
+        }
+
+        async function getSkills() {
+            const response = await fetch('/teamfit/all-skills', {
+                method: 'GET',
+            });
+            if (response.ok) {
+                let select = document.getElementById('skill');
+                skills = await response.json();
+
+                skills.forEach((skill) => {
+
+                    select.add(new Option(skill.title));
+                })
+            } else {
+                alert('Error!');
+            }
+        }
+
+        let skillCounter = 0
+
+        function cloneSkillSelect() {
+            let select = document.getElementById("skill")
+            let clone = select.cloneNode(true)
+            let name = select.getAttribute("name") + skillCounter++
+            clone.id = name
+            clone.setAttribute("name", name)
+            document.getElementById("select_skills").appendChild(clone)
+        }
+
+        async function getPeople() {
+            const response = await fetch('/teamfit/all-people', {
+                method: 'GET',
+            });
+            if (response.ok) {
+                let select = document.getElementById('person');
+                people = await response.json();
+
+                people.forEach((person) => {
+
+                    select.add(new Option(person.identifier));
+                })
+            } else {
+                alert('Error!');
+            }
+        }
+
+        let personCounter = 0
+
+        function clonePersonSelect() {
+            let select = document.getElementById("person")
+            let clone = select.cloneNode(true)
+            let name = select.getAttribute("name") + personCounter++
+            clone.id = name
+            clone.setAttribute("name", name)
+            document.getElementById("select_employees").appendChild(clone)
+        }
+    </script>
+</head>
+<body onload="getSkills(); getPeople()">
+
+<section id="hcenter">
+    <form action="/proiectnou" th:object="${project}" method="post" id="post_project" onsubmit="saveProject(event)">
+
+        <label for="title">Titlul proiectului:</label><br>
+        <input type="text" id="title" name="title" required><br>
+
+        <label for="skill">Abilități necesare pentru proiect:</label><br>
+        <div id="select_skills">
+            <select class="skill" id="skill" name="skill">
+            </select>
+        </div>
+        <button onclick="cloneSkillSelect()">+</button>
+        <br>
+
+        <label for="person">Angajați pe proiect:</label><br>
+
+        <div id="select_employees">
+            <select class="person" id="person" name="person">
+            </select>
+        </div>
+        <button onclick="clonePersonSelect()">+</button>
+        <br>
+
+        <br>
+        <input type="submit" value="Salvare">
+    </form>
+</section>
+</body>
+</html>

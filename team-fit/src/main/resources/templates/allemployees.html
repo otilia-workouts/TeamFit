@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Angajați</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+
+    <script>
+        let people = [];
+        let skills = [];
+        let currentEmployee;
+
+        async function fetchPeople() {
+            try {
+                const response = await fetch('/teamfit/all-people');
+                people = await response.json();
+
+                const tableBody = document.getElementById('personTableBody');
+                tableBody.innerHTML = '';
+
+                people.forEach((person, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${person.id}</td>
+                        <td>${person.firstName}</td>
+                        <td>${person.lastName}</td>
+                        <td><button onclick="editPerson(${person.id})">Edit</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching:', error);
+            }
+        }
+
+        async function fetchSkills() {
+            try {
+                const response = await fetch('/teamfit/all-skills');
+                skills = await response.json();
+
+                const body = document.getElementById('skillBody');
+                body.innerHTML = '';
+
+                skills.forEach((skill) => {
+                    const checkbox = document.createElement('input');
+                    checkbox.setAttribute("id", skill.id)
+                    checkbox.className ="skill";
+                    checkbox.setAttribute("type", "checkbox")
+                    checkbox.setAttribute("type", "checkbox")
+                    checkbox.value = skill.id; //skill.title +' '+skill.level;
+                    var span = document.createElement('span');
+                    span.textContent = skill.title + ' ' + skill.level;
+                    var label = document.createElement('label');
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    body.appendChild(label);
+                    body.appendChild(document.createElement('br'));
+                });
+            } catch (error) {
+                console.error('Error fetching:', error);
+            }
+        }
+
+        function editPerson(id) {
+            const person = people.find(person => person.id === id);
+            if (person) {
+                document.getElementById('editForm').style.display = 'block';
+                document.getElementById('editId').value = person.id;
+                document.getElementById('editFirstName').value = person.firstName;
+                document.getElementById('editLastName').value = person.lastName;
+
+                const checkboxes = document.getElementsByClassName("skill");
+
+                Array.from(checkboxes).forEach(checkbox => {
+                    if(person.skills.find(employeeSkill => employeeSkill.id.toString() === checkbox.value.toString()) !== undefined) {
+                        checkbox.checked = true;
+                    }
+                    else {
+                        checkbox.checked = false;
+                    }
+                });
+            }
+        }
+
+        async function updatePerson(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('editId').value;
+            const firstName = document.getElementById('editFirstName').value;
+            const lastName = document.getElementById('editLastName').value;
+            let personSkills = []
+            const checkboxes = document.getElementsByClassName("skill");
+
+            Array.from(checkboxes).forEach(checkbox => {
+                if(checkbox.checked) {
+                    personSkills.push(skills.find(skill => skill.id.toString() === checkbox.value));
+                }
+            });
+
+            const person = {firstName, lastName, skills: personSkills};
+
+            try {
+                const response = await fetch(`teamfit/person/save/${(id)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    },
+                    body: JSON.stringify(person)
+                });
+
+                if (response.ok) {
+                    const updatedPerson = await response.json();
+                    alert('Person updated successfully!');
+                    await fetchPeople();
+                    document.getElementById('editForm').style.display = 'none';
+                } else {
+                    alert('Failed to update person');
+                }
+            } catch (error) {
+                console.error('Error updating:', error);
+            }
+
+        }
+
+        window.onload = async function () {
+            await fetchPeople();
+            await fetchSkills();
+        }
+    </script>
+</head>
+<body>
+<table action="/angajati">
+    <thead>
+    <tr>
+        <th>Nr.</th>
+        <th>ID</th>
+        <th>Prenume</th>
+        <th>Nume</th>
+    </tr>
+    </thead>
+    <tbody id="personTableBody">
+    </tbody>
+</table>
+
+<div id="editForm" style="display: none;">
+    <h2>Edit Person</h2>
+    <form onsubmit="updatePerson(event)">
+        <input type="hidden" id="editId"/>
+        <label for="editFirstName">First name:</label>
+        <input type="text" id="editFirstName" required/><br><br>
+        <label for="editLastName">Last name:</label>
+        <input type="text" id="editLastName" required/><br><br>
+
+        <label>Skills</label>
+        <div id="skillBody">
+        </div>
+
+        <button type="submit">Salvare</button>
+    </form>
+</div>
+</body>
+</html>

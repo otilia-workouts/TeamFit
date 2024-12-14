@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Abilități</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+
+    <script>
+        let skills = [];
+
+        async function fetchSkills() {
+            try {
+                const response = await fetch('/teamfit/all-skills');
+                skills = await response.json();
+
+                const tableBody = document.getElementById('skillTableBody');
+                tableBody.innerHTML = '';
+
+                skills.forEach((skill,index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index+1}</td>
+                        <td>${skill.title}</td>
+                        <td>${skill.level}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching:', error);
+            }
+        }
+
+        window.onload = fetchSkills;
+    </script>
+</head>
+<body>
+<table action="/angajati">
+    <thead>
+    <tr>
+        <th>Nr.</th>
+        <th>Denumire</th>
+        <th>Nivel</th>
+    </tr>
+    </thead>
+    <tbody id="skillTableBody">
+    </tbody>
+</table>
+</body>
+</html>

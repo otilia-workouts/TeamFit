@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adaugă un angajat:</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <script>
+        async function saveEmployee(event) {
+            event.preventDefault();
+
+            const person = {
+                firstName: document.getElementById('fname').value,
+                lastName: document.getElementById('lname').value,
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                age: document.getElementById('age').value,
+                married: document.getElementById('married').value=== 'on',
+                yearsOfExperience: document.getElementById('yearsOfExperience').value,
+            };
+
+            const response = await fetch('/teamfit/person/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                },
+                body: JSON.stringify(person)
+            });
+
+            if (response.ok) {
+                alert('saved successfully!');
+                document.getElementById('post_person').reset();
+            } else {
+                alert('Error saving person!');
+            }
+        }
+    </script>
+</head>
+<body>
+
+<section id="hcenter">
+<form action="/angajatnou" th:object="${person}" method="post" id="post_person" onsubmit="saveEmployee(event)">
+
+        <label for="fname">First name:</label><br>
+        <input type="text" id="fname" name="fname" required><br>
+        <label for="lname">Last name:</label><br>
+        <input type="text" id="lname" name="lname" required><br>
+        <label for="email">Email:</label><br>
+        <input type="text" id="email" name="email" required><br>
+        <label for="address">Address:</label><br>
+        <input type="text" id="address" name="address" required><br>
+        <label for="age">Age:</label><br>
+        <input type="number" id="age" name="age" required><br>
+    <label for="yearsOfExperience">Ani de experienta:</label><br>
+    <input type="number" id="yearsOfExperience" name="yearsOfExperience" required><br>
+        <input type="checkbox" id="married" name="married">
+        <label for="married"> Married </label><br>
+        <br>
+        <input type="submit" value="Submit">
+</form>
+</section>
+</body>
+</html>
