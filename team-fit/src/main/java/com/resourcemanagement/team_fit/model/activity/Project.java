@@ -3,8 +3,10 @@ package com.resourcemanagement.team_fit.model.activity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.resourcemanagement.team_fit.model.Skill;
+import com.resourcemanagement.team_fit.model.basic.Employee;
 import com.resourcemanagement.team_fit.model.basic.Person;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +21,12 @@ public class Project implements IActivity {
     private String title;
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Skill> requirements = new ArrayList<>();
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "project_employees",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "employees_id")
+    )
     private List<Person> employees=new ArrayList<>();
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date start;
@@ -27,10 +34,10 @@ public class Project implements IActivity {
     private Date finish;
 
     public Project(){}
-    public Project(String title, ArrayList<Skill> requirements, ArrayList<Person> employees, Date start, Date finish) {
+    public Project(String title, ArrayList<Skill> requirements, ArrayList<Employee> employees, Date start, Date finish) {
         this.title = title;
         this.requirements = requirements;
-        this.employees = employees;
+        this.employees = new ArrayList<>(employees);
         this.start = start;
         this.finish = finish;
     }
@@ -79,8 +86,8 @@ public class Project implements IActivity {
         this.requirements = skills;
     }
 
-    public void setEmployees(ArrayList<Person> employees) {
-        this.employees = employees;
+    public void setEmployees(ArrayList<Employee> employees) {
+        this.employees = new ArrayList<>(employees);
     }
 
     public void setStart(Date start) {

@@ -1,9 +1,11 @@
 package com.resourcemanagement.team_fit.model.basic;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+//@JsonDeserialize(as = Employee.class)
 public abstract class Person {
 
     @Id
@@ -82,7 +84,7 @@ public abstract class Person {
     @Override
     public String toString() {
         return "Nume: " + lastName + ", Prenume: " + firstName + ", Varsta: " + age +
-               ", Oras: " + address + ", casatorita: " + married;
+               ", Adresa: " + address + ", casatorita: " + married;
     }
 
     public String getIdentifier() {

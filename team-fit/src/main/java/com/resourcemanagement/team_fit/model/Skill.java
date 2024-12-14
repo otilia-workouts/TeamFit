@@ -1,8 +1,11 @@
 package com.resourcemanagement.team_fit.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.resourcemanagement.team_fit.model.basic.Employee;
 import com.resourcemanagement.team_fit.model.enums.Level;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "skill")
@@ -14,8 +17,9 @@ public class Skill {
     private String title;
     private Level Level;
 
-    @ManyToOne
-    private Employee employee;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
+    @JsonIgnore
+    private List<Employee> employee;
 
     public Skill() {
 
