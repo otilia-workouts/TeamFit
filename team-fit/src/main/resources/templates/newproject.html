@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Adaugă un proiect:</title>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
     <script>
@@ -9,6 +10,9 @@
         let skills=[]
         async function saveProject(event) {
             event.preventDefault();
+
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
             let projectSkills=[]
             let selects=document.getElementsByClassName("skill")
@@ -35,6 +39,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken,
                     'Accept': '*/*'
                 },
                 body: JSON.stringify(project)

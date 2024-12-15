@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"  name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Adaugă o abilitate:</title>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
     <script>
@@ -25,6 +26,9 @@
         async function saveSkill(event) {
             event.preventDefault();
 
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
             let select = document.getElementById('level');
             let selected_text=select.options[select.selectedIndex].text;
             const skill = {
@@ -36,6 +40,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken,
                     'Accept': '*/*'
                 },
                 body: JSON.stringify(skill)

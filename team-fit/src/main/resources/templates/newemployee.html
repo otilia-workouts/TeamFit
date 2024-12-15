@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"  name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Adaugă un angajat:</title>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
     <script>
         async function saveEmployee(event) {
             event.preventDefault();
+
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
             const person = {
                 firstName: document.getElementById('fname').value,
@@ -22,6 +26,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken,
                     'Accept': '*/*'
                 },
                 body: JSON.stringify(person)
