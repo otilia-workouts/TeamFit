@@ -2,6 +2,8 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Proiecte</title>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
@@ -44,6 +46,8 @@
 
         async function updateProject(event) {
             event.preventDefault();
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
             const id = document.getElementById('editId').value;
             const title = document.getElementById('editTitle').value;
@@ -55,6 +59,7 @@
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken,
                         'Accept': '*/*'
                     },
                     body: JSON.stringify(project)
